@@ -1,3 +1,6 @@
+
+version: "3.9"
+
 name: artifyaiv1
 
 services:
@@ -73,5 +76,3 @@ services:
       - "${FLOWER_PORT-5555}:5555"
     depends_on:
       - redis
-
-

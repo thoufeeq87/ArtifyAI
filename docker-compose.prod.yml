@@ -45,5 +45,3 @@ services:
       - "${FLOWER_PORT-5555}:5555"
     depends_on:
       - redis
-
-

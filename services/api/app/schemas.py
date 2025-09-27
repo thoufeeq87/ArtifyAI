@@ -1,10 +1,11 @@
-from typing import Any, Dict, Literal
+from typing import Any, Literal
+
 from pydantic import BaseModel, Field
 
 
 class EnqueueRequest(BaseModel):
     type: Literal["add", "heavy"] = "add"
-    params: Dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, Any] = Field(default_factory=dict)
     queue: Literal["high", "default", "low"] = "default"
 
 

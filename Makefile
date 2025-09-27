@@ -1,12 +1,26 @@
-# Variables
-ENV ?= dev
-VERSION ?= 0.1.0
-IMAGE_BASE ?= $(IMAGE_BASE)
-API_IMAGE := $(IMAGE_BASE)-api
-WORKER_IMAGE := $(IMAGE_BASE)-worker
-SCHED_IMAGE := $(IMAGE_BASE)-scheduler
+# =========================
+# ArtifyAI Makefile (fixed)
+# =========================
 
-export UV_SYSTEM_PYTHON=0
+# ----- Configurable variables (override at CLI if needed) -----
+ENV        ?= dev
+VERSION    ?= 0.1.0
+
+# Default image namespace (override like: make build-images REGISTRY=my.registry NAME=artifyai)
+REGISTRY   = ghcr.io/thoufeeq87
+NAME       = artifyai
+VERSION=0.1.0
+
+# Compose full image base once (no self-reference)
+IMAGE_BASE := $(REGISTRY)/$(NAME)
+
+# Component image names
+API_IMAGE    := $(IMAGE_BASE)-api
+WORKER_IMAGE := $(IMAGE_BASE)-worker
+SCHED_IMAGE  := $(IMAGE_BASE)-scheduler
+
+# Use project-local Python via uv
+export UV_SYSTEM_PYTHON = 0
 
 .PHONY: help
 help:
@@ -19,6 +33,10 @@ help:
 	@echo "  down            docker compose down -v"
 	@echo "  build-images    Build api/worker/scheduler images (prod)"
 	@echo "  push-images     Push images to GHCR (requires login)"
+	@echo ""
+	@echo "Variables (override like VAR=value make <target>):"
+	@echo "  ENV=$(ENV) VERSION=$(VERSION) REGISTRY=$(REGISTRY) NAME=$(NAME)"
+	@echo "  IMAGE_BASE=$(IMAGE_BASE)"
 
 .PHONY: uv-setup
 uv-setup:

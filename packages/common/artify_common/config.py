@@ -17,7 +17,11 @@ class Settings(BaseSettings):
 
     flower_port: int = 5555
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="",extra="ignore",)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="",
+        extra="ignore",
+    )
 
     @property
     def broker_url(self) -> str:

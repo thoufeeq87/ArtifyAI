@@ -9,7 +9,7 @@ dependencies = [
   "pydantic-settings>=2.4",
   "artify-common>=0.1",
   "artify-worker>=0.1",
-  "flower>=2.0", 
+  "flower>=2.0",
 ]
 
 [build-system]

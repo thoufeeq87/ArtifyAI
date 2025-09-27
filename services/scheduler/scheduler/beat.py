@@ -1,6 +1,7 @@
 import os
+
 from celery.schedules import crontab
-from artify_common import settings
+
 from artify_common.logging import env_configure_from_vars
 from worker.celery_app import celery
 
@@ -21,4 +22,5 @@ celery.conf.beat_schedule = {
 
 def main() -> None:
     from celery.bin.beat import beat
+
     beat(app=celery).run(loglevel=os.getenv("LOG_LEVEL", "INFO"))

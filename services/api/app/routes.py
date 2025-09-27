@@ -1,11 +1,15 @@
-from fastapi import APIRouter, HTTPException
 from celery import Celery
 from celery.result import AsyncResult
+from fastapi import APIRouter, HTTPException
+
 from artify_common import settings
+
 from .schemas import EnqueueRequest, TaskStatusResponse
 
 router = APIRouter()
-celery_client = Celery("artify", broker=settings.broker_url, backend=settings.result_backend)
+celery_client = Celery(
+    "artify", broker=settings.broker_url, backend=settings.result_backend
+)
 
 
 @router.get("/health")
@@ -17,10 +21,14 @@ def health() -> dict[str, str]:
 def enqueue(req: EnqueueRequest) -> TaskStatusResponse:
     task_name = f"worker.tasks.{req.type}"
     try:
-        async_result = celery_client.send_task(task_name, kwargs=req.params, queue=req.queue)
-        return TaskStatusResponse(task_id=async_result.id, status="PENDING", result=None)
+        async_result = celery_client.send_task(
+            task_name, kwargs=req.params, queue=req.queue
+        )
+        return TaskStatusResponse(
+            task_id=async_result.id, status="PENDING", result=None
+        )
     except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/tasks/{task_id}", response_model=TaskStatusResponse)
