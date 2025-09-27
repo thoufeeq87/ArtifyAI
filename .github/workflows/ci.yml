@@ -1,0 +1,51 @@
+name: CI (lint, type-check, tests)
+
+on:
+  push:
+    branches: [ "main", "feature/**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Sync workspace deps (dev)
+        run: uv sync --all-extras --dev
+
+      - name: Lint (ruff) & Format check (black)
+        run: |
+          uv run ruff check .
+          uv run black --check .
+
+      - name: Type-check (mypy)
+        run: uv run mypy services packages
+
+      - name: Test (pytest with coverage)
+        env:
+          REDIS_URL: redis://localhost:6379/0
+          CELERY_BROKER_URL: redis://localhost:6379/0
+          CELERY_RESULT_BACKEND: redis://localhost:6379/1
+        run: uv run pytest

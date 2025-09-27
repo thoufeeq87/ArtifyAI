@@ -1,0 +1,12 @@
+pyproject.toml
+app/__init__.py
+app/main.py
+app/routes.py
+app/schemas.py
+app/version.py
+artify_api.egg-info/PKG-INFO
+artify_api.egg-info/SOURCES.txt
+artify_api.egg-info/dependency_links.txt
+artify_api.egg-info/entry_points.txt
+artify_api.egg-info/requires.txt
+artify_api.egg-info/top_level.txt

@@ -1,0 +1,49 @@
+
+
+services:
+  redis:
+    image: redis:7
+    restart: unless-stopped
+
+  api:
+    image: ${IMAGE_BASE-ghcr.io/<owner>/artifyaiv1}-api:${VERSION-0.1.0}
+    env_file: .env
+    environment:
+      APP_ENV: prod
+      LOG_LEVEL: INFO
+    ports:
+      - "${API_PORT-8000}:8000"
+    depends_on: [redis]
+    restart: unless-stopped
+
+  worker:
+    image: ${IMAGE_BASE-ghcr.io/<owner>/artifyaiv1}-worker:${VERSION-0.1.0}
+    env_file: .env
+    environment:
+      APP_ENV: prod
+      LOG_LEVEL: INFO
+    depends_on: [redis]
+    restart: unless-stopped
+
+  scheduler:
+    image: ${IMAGE_BASE-ghcr.io/<owner>/artifyaiv1}-scheduler:${VERSION-0.1.0}
+    env_file: .env
+    environment:
+      APP_ENV: prod
+      LOG_LEVEL: INFO
+    depends_on: [redis]
+    restart: unless-stopped
+
+  flower:
+    image: mher/flower:2.0
+    entrypoint: ["python", "-m", "flower"]
+    command:
+      - "--broker=${CELERY_BROKER_URL}"
+      - "--result-backend=${CELERY_RESULT_BACKEND}"
+      - "--port=${FLOWER_PORT-5555}"
+    ports:
+      - "${FLOWER_PORT-5555}:5555"
+    depends_on:
+      - redis
+
+

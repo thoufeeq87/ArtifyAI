@@ -1,0 +1,23 @@
+[project]
+name = "artify-worker"
+version = "0.1.0"
+description = "Celery worker for ArtifyAIv.1"
+requires-python = ">=3.12"
+dependencies = [
+  "celery>=5.4",
+  "redis>=5.0",
+  "pydantic-settings>=2.4",
+  "artify-common>=0.1",
+  "flower>=2.0", 
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+artify-worker = "worker.celery_app:main_worker"
+artify-flower = "worker.celery_app:main_flower"
+
+[tool.uv.sources]
+artify-common = { workspace = true }

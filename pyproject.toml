@@ -1,0 +1,35 @@
+[tool.uv.workspace]
+members = ["services/*", "packages/*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+respect-gitignore = true
+extend-select = [
+  "E","F","I","B","UP","N","ASYNC","C4","PIE","PTH","RET","SIM"
+]
+exclude = ["uv.lock",".venv",".git"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["artify_common","worker","scheduler","app"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+strict_optional = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --cov=services --cov=packages --cov-report=term-missing --cov-fail-under=80"
+testpaths = ["tests"]

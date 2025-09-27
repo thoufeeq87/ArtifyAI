@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: artify-scheduler
+Version: 0.1.0
+Summary: Celery Beat scheduler for ArtifyAIv.1
+Requires-Python: >=3.12
+Requires-Dist: celery>=5.4
+Requires-Dist: redis>=5.0
+Requires-Dist: pydantic-settings>=2.4
+Requires-Dist: artify-common>=0.1
+Requires-Dist: artify-worker>=0.1
+Requires-Dist: flower>=2.0

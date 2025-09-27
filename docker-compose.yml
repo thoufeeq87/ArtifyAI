@@ -1,0 +1,77 @@
+name: artifyaiv1
+
+services:
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+      args: { ENV: dev }
+    env_file: .env
+    environment: { APP_ENV: dev }
+    ports: ["${API_PORT-8000}:8000"]
+    command:
+      - uv
+      - run
+      - uvicorn
+      - services.api.app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+    volumes:
+      - .:/app
+    depends_on: [redis]
+
+  worker:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+      args: { ENV: dev }
+    env_file: .env
+    environment: { APP_ENV: dev }
+    command:
+      - celery
+      - -A
+      - worker.celery_app.celery
+      - worker
+      - --loglevel=${LOG_LEVEL-INFO}
+      - --concurrency=${WORKER_CONCURRENCY-4}
+      - -Q
+      - ${QUEUE_HIGH-high},${QUEUE_DEFAULT-default},${QUEUE_LOW-low}
+    depends_on: [redis]
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: services/scheduler/Dockerfile
+      args: { ENV: dev }
+    env_file: .env
+    environment: { APP_ENV: dev }
+    command:
+      - celery
+      - -A
+      - worker.celery_app.celery
+      - beat
+      - --loglevel=${LOG_LEVEL-INFO}
+    depends_on: [redis]
+
+  flower:
+    image: mher/flower:2.0        # 1.x or 2.x both support this CLI
+    entrypoint: ["celery"]         # run the Celery CLI
+    command:
+      - "--broker=${CELERY_BROKER_URL}"
+      - "--result-backend=${CELERY_RESULT_BACKEND}"
+      - "flower"                  # sub-command
+      - "--address=0.0.0.0"       # bind inside container
+      - "--port=${FLOWER_PORT-5555}"
+    ports:
+      - "${FLOWER_PORT-5555}:5555"
+    depends_on:
+      - redis
+
+

@@ -1,0 +1,3 @@
+[console_scripts]
+artify-flower = worker.celery_app:main_flower
+artify-worker = worker.celery_app:main_worker

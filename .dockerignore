@@ -1,0 +1,13 @@
+.git
+.gitignore
+.vscode
+.idea
+__pycache__
+*.pyc
+.env
+htmlcov
+.coverage
+.venv
+.uv
+uv.lock
+tests
